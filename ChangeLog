@@ -1,4 +1,14 @@
 2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* .gitignore: Created.
+	* COPYING: Created.
+	* seahorse-lights/.gitignore: Created.
+	* seahorse-lights/Makefile: Created.
+	* seahorse-lights/seahorse-lights.ino: Renamed from
+	seahorse-lights.c in main dir and rewritten to use generic data
+	structures.
+
+2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* ChangeLog: Created.
 	* seahorse-lights.c: Created.
