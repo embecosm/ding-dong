@@ -1,5 +1,16 @@
 2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	Initial implementation of lighting for Cuttlefish.
+
+	* cuttlefish-lights/.gitignore: Created.
+	* cuttlefish-lights/Makefile: Created.
+	* cuttlefish-lights/cuttlefish-lights.ino: Created.
+	* seahorse-lights/seahorse-lights.ino (clock_loop)
+	(anticlock_loop): Correct loop boundaries to avoid writing off end
+	of vectors.
+
+2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* .gitignore: Created.
 	* COPYING: Created.
 	* seahorse-lights/.gitignore: Created.

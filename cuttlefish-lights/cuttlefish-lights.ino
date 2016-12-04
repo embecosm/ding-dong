@@ -1,4 +1,4 @@
-// Christmas Tree Seahorse LED manipulation
+// Christmas Tree Cuttlefish LED manipulation
 
 // Copyright (C) 2016 Embecosm Limited <www.embecosm.com>
 
@@ -25,7 +25,7 @@
 // decorated with 3D printed decorations and assorted embecosm circuits
 // including the Seahorse and Cuttlefish.
 
-// This is the program to control the Seahorse LEDs.
+// This is the program to control the Cuttlefish LEDs.
  
 
 // Enum for colors
@@ -46,22 +46,35 @@ struct led_info
   int             off;		// HIGH or LOW
 };
 
-// Vector describing all lights clockwise from the belly
+// Vector describing all lights clockwise from the highest numbered pin
 
 static struct led_info leds [] =
-  { { 13, X, HIGH, LOW  },
-    { 12, G, HIGH, LOW  },
-    { 10, R, LOW , HIGH },
-    {  9, G, HIGH, LOW  },
-    { 11, R, LOW , HIGH },
-    {  7, G, HIGH, LOW  },
-    {  8, R, LOW , HIGH },
+  { { 18, R, HIGH, LOW  },
+    { 16, R, HIGH, LOW  },
+    { 14, G, HIGH, LOW  },
+    { 13, R, LOW , HIGH },
+    { 11, G, LOW,  HIGH },
+    {  9, R, LOW , HIGH },
+    {  8, R, HIGH, LOW  },
     {  6, G, HIGH, LOW  },
-    {  5, R, LOW , HIGH },
-    {  3, R, LOW , HIGH },
-    { 16, G, HIGH, LOW  },
-    { 18, R, LOW , HIGH },
-    { 17, G, HIGH, LOW  } };
+    {  4, R, LOW,  HIGH },
+    {  2, G, LOW , HIGH } };
+
+// Vector of pins to hold HIGH
+
+static int high_leds [] =
+  {
+    12, 10, 3
+  };
+
+// Vector of pins to hold LOW
+
+static int low_leds [] =
+  {
+    17, 15, 7, 5
+  };
+
+// Number of LEDs we can drive
 
 static int num_leds;
 
@@ -188,8 +201,21 @@ void setup() {
   // initialize the pins as output
 
   for (i = 0; i < num_leds; i++)
-    pinMode(leds[i].pin, OUTPUT);
+    pinMode (leds[i].pin, OUTPUT);
 
+  // Configure and drive fixed pins
+
+  for (i = 0; i < sizeof (high_leds) / sizeof (high_leds[0]); i++)
+    {
+      pinMode (high_leds[i], OUTPUT);
+      digitalWrite (high_leds[i], HIGH);
+    }
+  
+  for (i = 0; i < sizeof (low_leds) / sizeof (low_leds[0]); i++)
+    {
+      pinMode (low_leds[i], OUTPUT);
+      digitalWrite (low_leds[i], LOW);
+    }
 }	// setup ()
 
 // the loop routine runs over and over again forever:
@@ -216,10 +242,6 @@ void loop() {
     flashy (125);
 
   for (i = 0; i < 30; i++)
-    clock_loop (20);
-
-  for (i = 0; i < 30; i++)
     anticlock_loop (20);
 
-}
-
+}	// loop ()
