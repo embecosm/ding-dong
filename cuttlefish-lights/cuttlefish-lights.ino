@@ -49,7 +49,7 @@ struct led_info
 // Vector describing all lights clockwise from the highest numbered pin
 
 static struct led_info leds [] =
-  { { 18, R, HIGH, LOW  },
+  { { 18, G, HIGH, LOW  },
     { 16, R, HIGH, LOW  },
     { 14, G, HIGH, LOW  },
     { 13, R, LOW , HIGH },
@@ -242,6 +242,9 @@ void loop() {
     flashy (125);
 
   for (i = 0; i < 30; i++)
-    anticlock_loop (20);
+    clock_loop (30);
+
+  for (i = 0; i < 30; i++)
+    anticlock_loop (30);
 
 }	// loop ()

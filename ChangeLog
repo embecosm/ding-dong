@@ -1,5 +1,11 @@
 2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* cuttlefish-lights/cuttlefish-lights.ino: Mark LED on pin 18 as
+	green.
+	(loop): Make fastest loop 30ms delay to avoid causing fits.
+
+2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	Initial implementation of lighting for Cuttlefish.
 
 	* cuttlefish-lights/.gitignore: Created.
