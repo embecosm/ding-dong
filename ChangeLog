@@ -1,3 +1,21 @@
+2016-12-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* .gitignore: Add more backup files to ignore.
+	* cuttlefish-lights/cuttlefish-lights.ino: Fix light specs.
+	(flashy): Rewrite to use manual PWM.
+	(blender): Balance red and gree cycles.
+	(clock_loop, anticlock_loop): Rewrite to use manual PWM.
+	(void setup): layout tidy up.
+	* seahorse-lights/seahorse-lights.ino: Make belly active low.
+	(flashy): Rewrite to use manual PWM.
+	(blender): Balance red and gree cycles.
+	(clock_loop, anticlock_loop): Rewrite to use manual PWM.
+	(void setup): layout tidy up.
+	(void loop): Use 30ms timeout for fastest loops.
+	* star-lights/.gitignore: Created.
+	* star-lights/Makefile: Created.
+	* star-lights/star-lights.ino: Created.
+
 2016-12-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* cuttlefish-lights/cuttlefish-lights.ino: Mark LED on pin 18 as

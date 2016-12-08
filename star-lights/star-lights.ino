@@ -1,4 +1,4 @@
-// Christmas Tree Seahorse LED manipulation
+// Christmas Tree Star LED manipulation
 
 // Copyright (C) 2016 Embecosm Limited <www.embecosm.com>
 
@@ -25,15 +25,26 @@
 // decorated with 3D printed decorations and assorted embecosm circuits
 // including the Seahorse and Cuttlefish.
 
-// This is the program to control the Seahorse LEDs.
- 
+// This is the program to control the Star LEDs.
+
+
+// PWM ratio
+
+#define PWM_RAT 2
 
 // Enum for colors
 
 enum led_color {
-  R,
+  B,
   G,
   X
+};
+
+// Enum for position
+
+enum led_pos {
+  INNER,
+  OUTER
 };
 
 // Structure for describing LEDs.
@@ -42,26 +53,26 @@ struct led_info
 {
   int             pin;
   enum led_color  color;
+  enum led_pos    pos;
   int             on;		// HIGH or LOW
   int             off;		// HIGH or LOW
 };
 
-// Vector describing all lights clockwise from the belly
+// Vector describing all lights clockwise from the top
 
 static struct led_info leds [] =
-  { { 13, X, LOW,  HIGH },
-    { 12, G, HIGH, LOW  },
-    { 10, R, LOW , HIGH },
-    {  9, G, HIGH, LOW  },
-    { 11, R, LOW , HIGH },
-    {  7, G, HIGH, LOW  },
-    {  8, R, LOW , HIGH },
-    {  6, G, HIGH, LOW  },
-    {  5, R, LOW , HIGH },
-    {  3, R, LOW , HIGH },
-    { 16, G, HIGH, LOW  },
-    { 18, R, LOW , HIGH },
-    { 17, G, HIGH, LOW  } };
+  { {  2, G, INNER, HIGH, LOW },
+    {  9, B, OUTER, HIGH, LOW },
+    {  3, G, INNER, HIGH, LOW },
+    { 10, B, OUTER, HIGH, LOW },
+    {  4, G, INNER, HIGH, LOW },
+    { 11, B, OUTER, HIGH, LOW },
+    {  5, G, INNER, HIGH, LOW },
+    { 12, B, OUTER, HIGH, LOW },
+    {  6, G, INNER, HIGH, LOW },
+    { 13, B, OUTER, HIGH, LOW },
+    {  7, G, INNER, HIGH, LOW },
+    { 14, B, OUTER, HIGH, LOW } };
 
 static int num_leds;
 
@@ -73,7 +84,7 @@ flashy (int ms)
 {
   int j;
 
-  // Alternate having the green and red LEDs on.
+  // Alternate having the inner and outer LEDs on.
 
   for (j = 0; j < ms; j++)
     {
@@ -82,8 +93,7 @@ flashy (int ms)
       for (i = 0; i < num_leds; i++)
 	if (leds[i].color == G)
 	  {
-	    int dir = (((j % 4) == 0) || (leds[i].color == X))
-	      ? leds[i].on : leds[i].off;
+	    int dir = (j % PWM_RAT) == 0 ? leds[i].on : leds[i].off;
 
 	    digitalWrite (leds[i].pin, dir);
 	  }
@@ -102,8 +112,7 @@ flashy (int ms)
       for (i = 0; i < num_leds; i++)
 	if (leds[i].color != G)
 	  {
-	    int dir = (((j % 4) == 0) || (leds[i].color == X))
-	      ? leds[i].on : leds[i].off;
+	    int dir = (j % PWM_RAT) == 0 ? leds[i].on : leds[i].off;
 
 	    digitalWrite (leds[i].pin, dir);
 	  }
@@ -134,13 +143,13 @@ blender (float slices)
       if (leds[i].color == G)
         digitalWrite (leds[i].pin, leds[i].on);		// GREEN On
       else
-        digitalWrite (leds[i].pin, leds[i].off);	// RED/Unknown Off
+        digitalWrite (leds[i].pin, leds[i].off);	// BLUE Off
 
     delay (green);
   
     for (i = 0; i < num_leds; i++)
       if (leds[i].color != G)
-        digitalWrite (leds[i].pin, leds[i].on)	;	// RED/Unknown On
+        digitalWrite (leds[i].pin, leds[i].on)	;	// BLUE On
       else
         digitalWrite (leds[i].pin, leds[i].off);	// GREEN Off
 
@@ -176,19 +185,18 @@ clock_loop (int ms)
 
 	  if (i < num_leds)
 	    {
-	      int dir = (((j % 4) == 0) || (leds[i].color == X))
-		? leds[i].on : leds[i].off;
+	      int dir = (j % PWM_RAT) == 0 ? leds[i].on : leds[i].off;
 
-	      digitalWrite (leds[i].pin, dir);		// Current pin on?
+	      digitalWrite (leds[i].pin, dir);	// Current pin on?
 	    }
 
 	  // Prev LED
 
 	  if ((0 <= p1) && (p1 < num_leds))
 	    {
-	      int dir = (((j % 4) == 0) || (leds[p1].color == X))
-		? leds[p1].on : leds[p1].off;
-		digitalWrite (leds[p1].pin, dir);	// Prev pin on?
+	      int dir = (j % PWM_RAT) == 0 ? leds[p1].on : leds[p1].off;
+
+	      digitalWrite (leds[p1].pin, dir);	// Prev pin on?
 	    }
 
 	  // Prev but 2 LED
@@ -230,8 +238,7 @@ anticlock_loop (int ms)
 	  
 	  if (i >= 0)
 	    {
-	      int dir = (((j % 4) == 0) || (leds[i].color == X))
-		? leds[i].on : leds[i].off;
+	      int dir = (j % PWM_RAT) == 0 ? leds[i].on : leds[i].off;
 
 	      digitalWrite (leds[i].pin, dir);	// Current pin on
 	    }
@@ -240,9 +247,9 @@ anticlock_loop (int ms)
 
 	  if ((0 <= n1) && (n1 < num_leds))
 	    {
-	      int dir = (((j % 4) == 0) || (leds[n1].color == X))
-		? leds[n1].on : leds[n1].off;
-		digitalWrite (leds[n1].pin, dir);	// Prev pin on?
+	      int dir = (j % PWM_RAT) == 0 ? leds[n1].on : leds[n1].off;
+
+	      digitalWrite (leds[n1].pin, dir);	// Prev pin on?
 	    }
 	  
 	  // Prev but 2 LED

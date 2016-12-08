@@ -55,10 +55,10 @@ static struct led_info leds [] =
     { 13, R, LOW , HIGH },
     { 11, G, LOW,  HIGH },
     {  9, R, LOW , HIGH },
-    {  8, R, HIGH, LOW  },
-    {  6, G, HIGH, LOW  },
-    {  4, R, LOW,  HIGH },
-    {  2, G, LOW , HIGH } };
+    {  8, G, HIGH, LOW  },
+    {  6, R, HIGH, LOW  },
+    {  4, G, LOW,  HIGH },
+    {  2, R, LOW , HIGH } };
 
 // Vector of pins to hold HIGH
 
@@ -84,20 +84,49 @@ static int num_leds;
 static void
 flashy (int ms)
 {
-  int i;
+  int j;
 
-  // Half the LEDs are active high, half are active low. Turn each
-  // batch each way.
-  for (i = 0; i < num_leds; i++)
-    digitalWrite (leds[i].pin, HIGH);
+  // Alternate having the green and red LEDs on.
 
-  delay(ms);               // wait for a second
+  for (j = 0; j < ms; j++)
+    {
+      int  i;
+      
+      for (i = 0; i < num_leds; i++)
+	if (leds[i].color == G)
+	  {
+	    int dir = (((j % 4) == 0) || (leds[i].color == X))
+	      ? leds[i].on : leds[i].off;
 
-  for (i = 0; i < num_leds; i++)
-    digitalWrite (leds[i].pin, LOW);
-    
-  delay(ms);               // wait for a second
+	    digitalWrite (leds[i].pin, dir);
+	  }
+	else
+	  {
+	    digitalWrite (leds[i].pin, leds[i].off);
+	  }
 
+      delay(1);               // wait for a millisecond
+    }
+  
+  for (j = 0; j < ms; j++)
+    {
+      int  i;
+      
+      for (i = 0; i < num_leds; i++)
+	if (leds[i].color != G)
+	  {
+	    int dir = (((j % 4) == 0) || (leds[i].color == X))
+	      ? leds[i].on : leds[i].off;
+
+	    digitalWrite (leds[i].pin, dir);
+	  }
+	else
+	  {
+	    digitalWrite (leds[i].pin, leds[i].off);
+	  }
+
+      delay(1);               // wait for a millisecond
+    }
 }	// flashy
 
 
@@ -111,7 +140,7 @@ blender (float slices)
   for (j = 0.0; j < (2.0 * PI); j += PI / slices)
   {
     int i;
-    int red   = max ((int) (10.0 * sinf (j)) + 8, 0);
+    int red   = max ((int) (8.0 * sinf (j)) + 8, 0);
     int green = max (6 - (int) (8.0 * sinf (j)), 0);
     
     red = max (red, 0);
@@ -149,19 +178,47 @@ clock_loop (int ms)
   for (i = 0; i < num_leds; i++)
     digitalWrite (leds[i].pin, leds[i].off);	// All Off
 
-  // Turn the current pin on and the one two before off
+  // Turn the current and prev pin on and the one two before off
 
-  for (i = 0; i < num_leds + 2; i++)
+  for (i = 0; i < num_leds + 1; i++)
     {
-      int p = (i + num_leds - 2) % num_leds;
+      int j;
+      int p1 = i - 1;
+      int p2 = i - 2;
 
-      if (i < num_leds)
-	digitalWrite (leds[i].pin, leds[i].on);	// Current pin on
+      for (j = 0; j < ms; j++)
+	{
+	  // Current LED
 
-      digitalWrite (leds[p].pin, leds[p].off);	// Current pin off
+	  if (i < num_leds)
+	    {
+	      int dir = (((j % 4) == 0) || (leds[i].color == X))
+		? leds[i].on : leds[i].off;
 
-      delay (ms);
+	      digitalWrite (leds[i].pin, dir);		// Current pin on?
+	    }
+
+	  // Prev LED
+
+	  if ((0 <= p1) && (p1 < num_leds))
+	    {
+	      int dir = (((j % 4) == 0) || (leds[p1].color == X))
+		? leds[p1].on : leds[p1].off;
+		digitalWrite (leds[p1].pin, dir);	// Prev pin on?
+	    }
+
+	  // Prev but 2 LED
+	  
+	  if ((0 <= p2) && (p2 < num_leds))
+	    digitalWrite (leds[p2].pin, leds[p2].off);	// Prev pin but 2 off
+
+	  delay (1);
+	}
     }
+
+  for (i = 0; i < num_leds; i++)
+    digitalWrite (leds[i].pin, leds[i].off);	// All Off
+
 }	// clock_loop ()
 
 
@@ -175,18 +232,42 @@ anticlock_loop (int ms)
   for (i = 0; i < num_leds; i++)
     digitalWrite (leds[i].pin, leds[i].off);	// All Off
 
-  // Turn the current pin on and the one two before off
+  // Turn the current and next pin on and the one two after off
 
-  for (i = num_leds - 1; i >= -2; i--)
+  for (i = num_leds - 1; i >= -1; i--)
     {
-      int p = (i + 2) % num_leds;
+      int j;
+      int n1 = i + 1;
+      int n2 = i + 2;
 
-      if (i >= 0)
-	digitalWrite (leds[i].pin, leds[i].on);	// Current pin on
+      for (j = 0; j < ms; j++)
+	{
+	  // Current LED
+	  
+	  if (i >= 0)
+	    {
+	      int dir = (((j % 4) == 0) || (leds[i].color == X))
+		? leds[i].on : leds[i].off;
 
-      digitalWrite (leds[p].pin, leds[p].off);	// Current pin off
+	      digitalWrite (leds[i].pin, dir);	// Current pin on
+	    }
 
-      delay (ms);
+	  // Next LED
+
+	  if ((0 <= n1) && (n1 < num_leds))
+	    {
+	      int dir = (((j % 4) == 0) || (leds[n1].color == X))
+		? leds[n1].on : leds[n1].off;
+		digitalWrite (leds[n1].pin, dir);	// Prev pin on?
+	    }
+	  
+	  // Prev but 2 LED
+	  
+	  if ((0 <= n2) && (n2 < num_leds))
+	    digitalWrite (leds[n2].pin, leds[n2].off);	// Prev pin but 2 off
+
+	  delay (1);
+	}
     }
 }	// anticlock_loop ()
 
@@ -201,7 +282,7 @@ void setup() {
   // initialize the pins as output
 
   for (i = 0; i < num_leds; i++)
-    pinMode (leds[i].pin, OUTPUT);
+    pinMode(leds[i].pin, OUTPUT);
 
   // Configure and drive fixed pins
 
